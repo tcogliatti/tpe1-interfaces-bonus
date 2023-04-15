@@ -7,33 +7,33 @@ let ctx = canvas.getContext('2d');
 
 ////////////////////////////// Setup
                             //
-const LIMIT = 16;            // cant de figuras
+const LIMIT = 6;            // cant de figuras
 const MIN_ZISE = 100;       // tamaño minimo de la fig
 const MAX_ZISE = 150;       // tamaño maximo
-let deltaPos;               // variable global de distancia entre puntos
+const SELECTED_COLOR = 'rgba(37, 35, 44, 200)' // color figura seleccionada
+let styleSelected;          // variable global que almacena el color del objeto seleccionado
 let figuras = [];           // array de figuras
+
 
 //////////////////////////// Main
 
 function main() {
 
-    // Create all figures
+    // Crea las figuras y las guarda en un array
     createFigures()
 
-    // Draw All images
+    // Dibuja las figuras
     drawAllImages();
 
-    // select figure & move functionality
+    // seleccion de figuras & funcion de drag & move
     selectFigure();
 
-    // escucha click up
-    dropFigure();
+    // escucha click up & drop figura
+    // dropFigure();
 }
 
-//////////////////////////// Create Figures
+//////////////////////////// Crear figuras
 function createFigures() {
-
-
     
     for (let index = 0; index < LIMIT; index++) {
 
@@ -58,64 +58,99 @@ function createFigures() {
         }
     }
 }
+
 function drawAllImages() {
     figuras.forEach(fig => {
         fig.draw();
  });
 }
 
-//////////////////////////// add drag & drop functionality
+//////////////////////////// add click listener
 function selectFigure(){
     canvas.addEventListener('mousedown', function (e) { // escucha clic down
         
+        for (let index = 0; index < figuras.length; index++) { // si hay una figura seleccionada se desdelecciona
+            if(figuras[index].isSelected())
+                deselectFigura(index);
+        }
+
+        // check si el click se hizo sobre una figura
         let index = LIMIT-1;
         let selected = false;
-        while(index >= 0 && !selected){ // check si el click se hizo sobre una figura
-           
+        while(index >= 0 && !selected){ // recorre el array
             const figura = figuras[index];
+            
             // verifica que el click se hizo dentro de la figura
-            let clic = {x: (e).offsetX, y: (e).offsetY}
-            if (figura.estaElPunto(clic["x"], clic["y"])){
-              
-                // la figura seleccionada pasa al frente (desde el punto de vista del array, al final)
-                const aux = figuras[index];
-                let actPos = aux.getPos();
-                deltaPos = {x:(clic['x']-actPos['x']), y:(clic['y']-actPos['y'])}; // obtenemos el diferencial entre el pto de ubicacion de la figura y el clock del mouse
-                aux.selected(true); 
-                figuras.splice(index, 1);
-                figuras.push(aux);
+            if (figura.estaElPunto((e).offsetX, (e).offsetY)){
+                selectedFigura(index)
+                               
                 // agrega una escucha para el movimiento
-                canvas.addEventListener('mousemove', dragFigure);
+                window.addEventListener('keydown', (e)=>{
+                    moveFigure(e)
+                });
+                
                 selected = true;
                 break;
-            }
+            }else 
             index--;
         }
+        drawAllImages();
     });
 }
 
-function dropFigure() {
-    canvas.addEventListener('mouseup', function (e) {
-        for (let index = 0; index < LIMIT; index++) {
-            const figura = figuras[index];
-            if(figura.isSelected()){
-                canvas.removeEventListener('mousemove', dragFigure);
-                figura.selected(false);
-            }
-        }
+function deselectFigura(index){
+    // aplica estilo original a la figura seleccionada
+    figuras[index].setStyle(styleSelected);
+    figuras[index].selected(false);
+    console.log('deselct');
+    // remueve el eventListener de la tecla
+    window.removeEventListener('keydown', (e)=>{
+        moveFigure(e)
     });
 }
 
-function dragFigure(e) {
+function selectedFigura(index){
+    // la figura seleccionada pasa al frente (desde el punto de vista del array, al final)
+    const aux = figuras[index];
+    // console.log(aux);
+    styleSelected = aux.getStyle();
+    // aplica estilo oscuro a la figura y la marco como seleccionada
+    aux.setStyle(SELECTED_COLOR);
+    // indica como selected al objeto
+    aux.selected(true);
+    // lo ubica al final de array para que quede adelante al redibujar el canvas
+    figuras.splice(index, 1);
+    figuras.push(aux);
+}
+
+
+function moveFigure(e) {
     // limpiamos el lienzo
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     // asignamos las nuvas coordenadas a la fiugra seleccionada
     figuras.forEach(fig => {
         if(fig.isSelected()){
-            fig.moveTo(e.offsetX-deltaPos['x'], e.offsetY-deltaPos['y']);
-        }
+            let move = {x: 0, y: 0};
+            // debugger;
+            let figPos = fig.getPos();
+            console.log(figPos);
+            if (e.code === 'ArrowLeft') {
+                move = { x: (figPos['x']-5), y: figPos['y']};    
+                console.log('izq');                
+                } else if (e.code === 'ArrowUp') {
+                console.log('up');                
+                move = { x: figPos['x'], y: (figPos['y']-5)};                    
+                } else if (e.code === 'ArrowRight') {
+                console.log('der');                
+                move = { x: (figPos['x']+5), y: figPos['y']};                    
+                } else if (e.code === 'ArrowDown') {
+                console.log('down');                
+                move = { x: figPos['x'], y: (figPos['y']+5)};                    
+                }
+
+            fig.moveTo(move['x'], move['y']);
+         }
     });
     // redibujamos el lienzo
     drawAllImages();
-
 }

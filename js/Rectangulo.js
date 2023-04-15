@@ -28,4 +28,8 @@ class Rectangulo extends Figura
         return false; 
     }
 
+    getMyData(){
+        return { l1: this.l1, l2: this.l2}; 
+    }
+
 }

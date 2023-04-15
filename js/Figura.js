@@ -25,8 +25,22 @@ class Figura
         return {x: this.posX, y: this.posY};
     }
 
+    setStyle(color){
+        this.style = color;
+    }
+
+    getStyle(){
+        return this.style;
+    }
+
     selected(clic) {
         this.clicked = clic;
+    }
+
+    getMyData(){
+        // nothing to do - abstract method
+
+        return null; 
     }
 
     isSelected() {

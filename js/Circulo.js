@@ -25,5 +25,7 @@ class Cicrulo extends Figura
             return true
         return false; 
     }
-
+    getMyData(){
+        return this.r; 
+    }
 }
