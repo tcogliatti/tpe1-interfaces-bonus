@@ -28,8 +28,6 @@ function main() {
     // seleccion de figuras & funcion de drag & move
     selectFigure();
 
-    // escucha click up & drop figura
-    // dropFigure();
 }
 
 //////////////////////////// Crear figuras
@@ -59,13 +57,14 @@ function createFigures() {
     }
 }
 
+//////////////////////////// Dibujar figuras
 function drawAllImages() {
     figuras.forEach(fig => {
         fig.draw();
  });
 }
 
-//////////////////////////// add click listener
+//////////////////////////// Select Figuras
 function selectFigure(){
     canvas.addEventListener('mousedown', function (e) { // escucha clic down
         
@@ -77,7 +76,7 @@ function selectFigure(){
         // check si el click se hizo sobre una figura
         let index = LIMIT-1;
         let selected = false;
-        while(index >= 0 && !selected){ // recorre el array
+        while(index >= 0 && !selected){ // recorre el array de figuras
             const figura = figuras[index];
             
             // verifica que el click se hizo dentro de la figura
@@ -89,30 +88,29 @@ function selectFigure(){
                     moveFigure(e)
                 });
                 
-                selected = true;
-                break;
-            }else 
+                selected = true; // flag para cortar el while
+            }
             index--;
         }
         drawAllImages();
     });
 }
 
+//////////////////////////// Des seleccionar figuras figuras
 function deselectFigura(index){
     // aplica estilo original a la figura seleccionada
     figuras[index].setStyle(styleSelected);
     figuras[index].selected(false);
-    console.log('deselct');
     // remueve el eventListener de la tecla
     window.removeEventListener('keydown', (e)=>{
         moveFigure(e)
     });
 }
 
+//////////////////////////// Operaciones sobre figura seleccinada
 function selectedFigura(index){
     // la figura seleccionada pasa al frente (desde el punto de vista del array, al final)
     const aux = figuras[index];
-    // console.log(aux);
     styleSelected = aux.getStyle();
     // aplica estilo oscuro a la figura y la marco como seleccionada
     aux.setStyle(SELECTED_COLOR);
@@ -123,7 +121,7 @@ function selectedFigura(index){
     figuras.push(aux);
 }
 
-
+//////////////////////////// Mover figura con arrows keys
 function moveFigure(e) {
     // limpiamos el lienzo
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -133,18 +131,13 @@ function moveFigure(e) {
             let move = {x: 0, y: 0};
             // debugger;
             let figPos = fig.getPos();
-            console.log(figPos);
             if (e.code === 'ArrowLeft') {
                 move = { x: (figPos['x']-5), y: figPos['y']};    
-                console.log('izq');                
                 } else if (e.code === 'ArrowUp') {
-                console.log('up');                
                 move = { x: figPos['x'], y: (figPos['y']-5)};                    
                 } else if (e.code === 'ArrowRight') {
-                console.log('der');                
                 move = { x: (figPos['x']+5), y: figPos['y']};                    
                 } else if (e.code === 'ArrowDown') {
-                console.log('down');                
                 move = { x: figPos['x'], y: (figPos['y']+5)};                    
                 }
 
