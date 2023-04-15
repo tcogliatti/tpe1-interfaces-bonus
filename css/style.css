@@ -1,0 +1,21 @@
+/* 
+            Clases del conenedor 
+*/
+
+.container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color: white;
+}
+#canvas{
+    border: 3px solid rgb(138, 138, 138);
+    padding: 2px;
+    background-color: white;
+}
+body{
+    background-color: #222;
+}
