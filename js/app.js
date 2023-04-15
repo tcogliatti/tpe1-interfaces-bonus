@@ -31,6 +31,11 @@ function main() {
 }
 
 //////////////////////////// Crear figuras
+/* 
+    este procedimiento instancia las figuras y las almacena en un array
+    los indices pares crearan Rectangulo
+    los impares instanciarán Circulos
+*/ 
 function createFigures() {
     
     for (let index = 0; index < LIMIT; index++) {
@@ -58,6 +63,11 @@ function createFigures() {
 }
 
 //////////////////////////// Dibujar figuras
+/*
+    procedimiento que itera el arrray de figuras e
+    invoca el método draw() en cada una para que se
+    pinten en el canvas
+*/
 function drawAllImages() {
     figuras.forEach(fig => {
         fig.draw();
@@ -65,6 +75,17 @@ function drawAllImages() {
 }
 
 //////////////////////////// Select Figuras
+/*
+    este procedimiento es el encargado de añadir un evento de tipo 
+    "mousedown" al canvas. Cada vez que sea clic este evento va a:
+        1. Desdeleccionar las figuras seleccionadas
+        2. Verificar si el clic fue hecho sobre una figura invocando el método estaElPunto()
+        3. El array se itera con un while, de atras hacia adelante para que tome como prioridad del click
+           la figura que esta más arriba
+        4. si existe una figura seleccionada llama al procedimiento slectedFigura() y le pasa el indicie
+        5. luego añade el evento "keydown" para poder mover la figura con las teclas cursos
+        6. Redibujar el canvas
+*/ 
 function selectFigure(){
     canvas.addEventListener('mousedown', function (e) { // escucha clic down
         
@@ -97,6 +118,12 @@ function selectFigure(){
 }
 
 //////////////////////////// Des seleccionar figuras figuras
+/*
+    recibe parametro de tipo entero que es el indice del array de la figura seleccioada:
+        1. deselecciona
+        2. aplica estilo original
+        3. remueve evento de escucha "keydown"
+*/
 function deselectFigura(index){
     // aplica estilo original a la figura seleccionada
     figuras[index].setStyle(styleSelected);
@@ -108,6 +135,15 @@ function deselectFigura(index){
 }
 
 //////////////////////////// Operaciones sobre figura seleccinada
+/*
+    recibe parametro de tipo entero que es el indice del array de la figura seleccioada, 
+    enviado desde selectFigure():
+        1. marca al figura como seleccionada invocando al metodo selected(true)
+        2. ordena la fura seleccionada al final del array para que al redibujar el canvas
+           esta quede sobre las demas
+        3. giuarda su estilo original
+        4. le aplia un estilo particula de figura seleccionada
+*/
 function selectedFigura(index){
     // la figura seleccionada pasa al frente (desde el punto de vista del array, al final)
     const aux = figuras[index];
@@ -122,6 +158,14 @@ function selectedFigura(index){
 }
 
 //////////////////////////// Mover figura con arrows keys
+/*
+    recibe como parametro el evento "keydown":
+        1. borra el canvas
+        2. verifica que el evento sea una arrow key
+        3. calcula coordenadas segun la tcla presionada
+        4. aplica coordenadas a la figura seleccionada
+        5. redibuja el canvas
+*/
 function moveFigure(e) {
     // limpiamos el lienzo
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
